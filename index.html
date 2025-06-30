@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <title>CMRL Complaint Submission</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f2f2f2;
+        padding: 40px;
+        margin: 0;
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 25px 30px;
+        max-width: 600px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 500;
+      }
+
+      input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      button {
+        background-color: #007b5e;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #005e45;
+      }
+
+      #response {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+        color: green;
+      }
+
+      @media (max-width: 600px) {
+        form {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>CMRL Complaint Submission</h2>
+
+    <form id="complaintForm">
+      <label for="date">Date</label>
+      <input type="date" name="date" required>
+
+      <label for="time">Time</label>
+      <input type="time" name="time" required>
+
+      <label for="station">Station</label>
+      <input type="text" name="station" placeholder="Enter station name" required>
+
+      <label for="mode">Mode of Complaint</label>
+      <select name="mode" required>
+        <option value="">-- Select --</option>
+        <option value="Whatsapp">Whatsapp</option>
+        <option value="E-mail">E-mail</option>
+        <option value="Fault App">Fault App</option>
+        <option value="Customer Care">Customer Care</option>
+      </select>
+
+      <label for="scm">SCM No</label>
+      <input type="text" name="scm" placeholder="Enter SCM number" required>
+
+      <label for="name">Complainant Name</label>
+      <input type="text" name="name" placeholder="Optional">
+
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
+
+      <label for="type">Complaint Type</label>
+      <input type="text" name="type" required placeholder="e.g., Overcharge, Faulty Card">
+
+      <label for="description">Description</label>
+      <textarea name="description" rows="4" placeholder="Describe the issue..." required></textarea>
+
+      <button type="button" onclick="submitComplaint()">Submit Complaint</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+      function submitComplaint() {
+        const form = document.getElementById('complaintForm');
+        const formData = new FormData(form);
+        const data = {};
+
+        formData.forEach((value, key) => {
+          data[key] = value;
+        });
+
+        google.script.run
+          .withSuccessHandler(response => {
+            document.getElementById("response").textContent = response;
+            form.reset();
+          })
+          .withFailureHandler(error => {
+            document.getElementById("response").textContent = "❌ Error: " + error.message;
+          })
+          .submitComplaintToSheet(data);
+      }
+    </script>
+  </body>
+</html>
