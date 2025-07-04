@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <title>CMRL Dashboard</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2;
+        display: flex; flex-direction: column; align-items: center;
+        padding-top: 50px; margin: 0;
+      }
+      h2 { color: #333; }
+      button {
+        background-color: #007b5e; color: white; padding: 12px;
+        border: none; border-radius: 5px; margin: 10px 0;
+        font-size: 16px; cursor: pointer; width: 250px;
+      }
+      button:hover { background-color: #005e45; }
+    </style>
+  </head>
+
+  <body>
+    <h2>CMRL Dashboard</h2>
+    <button onclick="loadComplaintForm()">Complaint Form</button>
+    <button onclick="loadMailSent()">Mail Sent Form</button>
+    <button onclick="loadReplied()">Replied Form</button>
+    <button onclick="loadCloseFault()">Close Fault</button>
+    <button onclick="goBackToLogin()">Back</button>
+
+    <script>
+      function loadComplaintForm() {
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
+        }).getComplaintForm();
+      }
+
+      function loadMailSent() {
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
+        }).getMailSentForm();
+      }
+
+      function loadReplied() {
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
+        }).getRepliedForm();
+      }
+
+      function loadCloseFault() {
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
+        }).getCloseFaultForm();
+      }
+
+      function goBackToLogin() {
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
+        }).getLoginForm();
+      }
+    </script>
+  </body>
+</html>
