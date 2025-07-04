@@ -1,3 +1,4 @@
+// Serve the web app with routing
 function doGet(e) {
   const page = e && e.parameter && e.parameter.page;
 
@@ -53,26 +54,72 @@ function getDashboard() {
   return HtmlService.createHtmlOutputFromFile('Dashboard').getContent();
 }
 
-// Submit complaint
+// Submit complaint with auto-generated sequential Ack No and auto-raise in mode column
 function submitComplaintToSheet(data) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
-  const lastRow = sheet.getLastRow() + 1;
+  if (!sheet) {
+    throw new Error("❌ Sheet 'Data' not found. Please create it in your spreadsheet.");
+  }
+
+  const lastRow = sheet.getLastRow();
+  let ackNo;
+
+  if (lastRow > 1) { // If there are existing complaints
+    const lastAckNoCell = sheet.getRange(lastRow, 1).getValue();
+    if (lastAckNoCell && !isNaN(lastAckNoCell)) {
+      ackNo = parseInt(lastAckNoCell) + 1;
+    } else {
+      ackNo = 1000; // If last Ack No is blank or invalid, reset to 1000
+    }
+  } else {
+    ackNo = 1000; // If no previous complaints, start from 1000
+  }
+
+  const newRow = lastRow + 1;
+
+  // Determine which channel to set as 'Raised'
+  let faultApp = "", whatsapp = "", email = "", customerCare = "";
+
+  switch (data.mode.toLowerCase()) {
+    case "fault app":
+      faultApp = "Raised";
+      break;
+    case "whatsapp":
+      whatsapp = "Raised";
+      break;
+    case "e-mail":
+    case "email":
+      email = "Raised";
+      break;
+    case "customer care":
+      customerCare = "Raised";
+      break;
+  }
 
   const values = [[
-    data.date,
-    data.time,
-    data.station,
-    data.mode,
-    data.scm,
-    data.name || "",
-    data.mobile || "",
-    data.type,
-    data.description,
-    "", "", "", "", ""
+    ackNo,                // Column A: Ack No
+    data.date,            // Column B: Date
+    data.time,            // Column C: Time
+    data.station,         // Column D: Station
+    data.mode,            // Column E: Mode
+    data.scm,             // Column F: SCM No
+    data.name || "",      // Column G: Name
+    data.mobile || "",    // Column H: Mobile
+    data.type,            // Column I: Type
+    data.description,     // Column J: Description
+    "",                   // Column K: Additional Info
+    "",                   // Column L: Status
+    "",                   // Column M: Fault Closed Date
+    "",                   // Column N: Mail Sent Date
+    "",                   // Column O: Mail Status
+    faultApp,             // Column P: Fault App
+    whatsapp,             // Column Q: Whatsapp
+    email,                // Column R: E-mail
+    customerCare          // Column S: Customer Care
   ]];
 
-  sheet.getRange(lastRow, 2, 1, values[0].length).setValues(values);
-  return "✅ Complaint submitted successfully!";
+  sheet.getRange(newRow, 1, 1, values[0].length).setValues(values);
+  return "✅ Complaint submitted successfully with Ack No: " + ackNo;
 }
 
 // Get pending mails
@@ -149,3 +196,4 @@ function closeFault(ackNo, closedDate) {
   }
   return "❌ Ack No not found.";
 }
+
