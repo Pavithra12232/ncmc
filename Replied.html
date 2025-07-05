@@ -9,7 +9,7 @@
         background-color: #fff; padding: 25px; max-width: 400px; margin: auto;
         border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
-      input[type="text"], button {
+      input[type="text"], select, button {
         width: 100%; padding: 10px; margin-top: 10px;
         border-radius: 4px; border: 1px solid #ccc; font-size: 14px;
       }
@@ -27,22 +27,34 @@
     <div class="card">
       <h2>Mark Complaint as Replied</h2>
       <input type="text" id="ackNo" placeholder="Enter Ack No">
+
+      <select id="mode">
+        <option value="">-- Select Mode of Complaint --</option>
+        <option value="Fault app">Fault app</option>
+        <option value="Whatsapp">Whatsapp</option>
+        <option value="E-mail">E-mail</option>
+        <option value="Customer Care">Customer Care</option>
+      </select>
+
       <button onclick="markAsReplied()">Submit</button>
       <button class="back-button" onclick="goBack()">Back</button>
+
       <div id="statusMsg"></div>
     </div>
 
     <script>
       function markAsReplied() {
         const ackNo = document.getElementById('ackNo').value.trim();
-        if (!ackNo) {
-          document.getElementById('statusMsg').textContent = "Please enter Ack No.";
+        const mode = document.getElementById('mode').value;
+
+        if (!ackNo || !mode) {
+          document.getElementById('statusMsg').textContent = "Please enter Ack No and select Mode.";
           return;
         }
 
         google.script.run.withSuccessHandler(function(response) {
           document.getElementById('statusMsg').textContent = response;
-        }).updateRepliedStatus(ackNo);
+        }).markAsReplied(ackNo, mode);
       }
 
       function goBack() {
@@ -53,6 +65,3 @@
     </script>
   </body>
 </html>
-
-
-
