@@ -45,7 +45,50 @@
       <label>Time</label>
       <input type="time" name="time" required>
       <label>Station</label>
-      <input type="text" name="station" placeholder="Enter station name" required>
+       <select name="station" required>
+        <option value="">-- Select --</option>
+        <option value="SWD">SWD</option>
+        <option value="SWN">SWN</option>
+        <option value="STV">STV</option>
+        <option value="STT">STT</option>
+        <option value="SKP">SKP</option> 
+        <option value="STG">STG</option>
+        <option value="SNW">SNW</option>
+        <option value="STR">STR</option>
+        <option value="STC">STC</option>
+        <option value="SWA">SWA</option>
+        <option value="SMA">SMA</option>
+        <option value="SHC">SHC</option>
+        <option value="SGE">SGE</option>
+        <option value="SLI">SLI</option>
+        <option value="STL">STL</option>
+        <option value="SGM">SGM</option>
+        <option value="STE">STE</option>
+        <option value="SCR">SCR</option>
+        <option value="SSA">SSA</option>
+        <option value="SLM">SLM</option>
+        <option value="SGU">SGU</option>
+        <option value="SOT">SOT</option>
+        <option value="SME">SME</option>
+        <option value="SAP">SAP</option>
+        <option value="SCC">SCC</option>
+        <option value="SEG">SEG</option>
+        <option value="SNP">SNP</option>
+        <option value="SKM">SKM</option>
+        <option value="SPC">SPC</option>
+        <option value="SSN">SSN</option>
+        <option value="SAE">SAE</option>
+        <option value="SAT">SAT</option>
+        <option value="STI">STI</option>
+        <option value="SKO">SKO</option>
+        <option value="SCM">SCM</option>
+        <option value="SAR">SAR</option>
+        <option value="SVA">SVA</option>
+        <option value="SAN">SAN</option>
+        <option value="SSI">SSI</option>
+        <option value="SAL">SAL</option>
+        <option value="SMM">SMM</option>
+      </select>
       <label>Mode of Complaint</label>
       <select name="mode" required>
         <option value="">-- Select --</option>
@@ -56,12 +99,19 @@
       </select>
       <label>SCM No</label>
       <input type="text" name="scm" placeholder="Enter SCM number" required>
-      <label>Complainant Name</label>
+      <label>System</label>
       <input type="text" name="name" placeholder="Optional">
       <label>Mobile Number</label>
       <input type="tel" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
       <label>Complaint Type</label>
-      <input type="text" name="type" required placeholder="e.g., Overcharge, Faulty Card">
+      <select name="type" required>
+        <option value="">-- Select --</option>
+        <option value="WebTop">WebTop</option>
+        <option value="Replacement">Replacement</option>
+        <option value="Balance Sync">Balance Sync</option>
+        <option value="Portal issue">Portal issue</option>
+        <option value="Others">Others</option>
+      </select>
       <label>Description</label>
       <textarea name="description" rows="4" placeholder="Describe the issue..." required></textarea>
 
@@ -96,6 +146,7 @@
     </script>
   </body>
 </html>
+
 
 
 
