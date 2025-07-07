@@ -34,24 +34,26 @@
       .back-button { background-color: #999; }
       .back-button:hover { background-color: #666; }
       #response { margin-top: 20px; text-align: center; font-weight: bold; color: green; }
+      .required { color: red; margin-left: 4px; }
     </style>
   </head>
-
   <body>
     <h2>CMRL Complaint Submission</h2>
     <form id="complaintForm">
-      <label>Date</label>
+      <label>Date <span class="required">*</span></label>
       <input type="date" name="date" required>
-      <label>Time</label>
+
+      <label>Time <span class="required">*</span></label>
       <input type="time" name="time" required>
-      <label>Station</label>
-       <select name="station" required>
+
+      <label>Station <span class="required">*</span></label>
+      <select name="station" required>
         <option value="">-- Select --</option>
         <option value="SWD">SWD</option>
         <option value="SWN">SWN</option>
         <option value="STV">STV</option>
         <option value="STT">STT</option>
-        <option value="SKP">SKP</option> 
+        <option value="SKP">SKP</option>
         <option value="STG">STG</option>
         <option value="SNW">SNW</option>
         <option value="STR">STR</option>
@@ -89,7 +91,8 @@
         <option value="SAL">SAL</option>
         <option value="SMM">SMM</option>
       </select>
-      <label>Mode of Complaint</label>
+
+      <label>Mode of Complaint <span class="required">*</span></label>
       <select name="mode" required>
         <option value="">-- Select --</option>
         <option value="Whatsapp">Whatsapp</option>
@@ -97,13 +100,17 @@
         <option value="Fault App">Fault App</option>
         <option value="Customer Care">Customer Care</option>
       </select>
-      <label>SCM No</label>
+
+      <label>SCM No <span class="required">*</span></label>
       <input type="text" name="scm" placeholder="Enter SCM number" required>
+
       <label>System</label>
       <input type="text" name="name" placeholder="Optional">
+
       <label>Mobile Number</label>
       <input type="tel" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
-      <label>Complaint Type</label>
+
+      <label>Complaint Type <span class="required">*</span></label>
       <select name="type" required>
         <option value="">-- Select --</option>
         <option value="WebTop">WebTop</option>
@@ -112,7 +119,8 @@
         <option value="Portal issue">Portal issue</option>
         <option value="Others">Others</option>
       </select>
-      <label>Description</label>
+
+      <label>Description <span class="required">*</span></label>
       <textarea name="description" rows="4" placeholder="Describe the issue..." required></textarea>
 
       <button type="button" onclick="submitComplaint()">Submit Complaint</button>
@@ -123,6 +131,11 @@
     <script>
       function submitComplaint() {
         const form = document.getElementById('complaintForm');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
         const formData = new FormData(form);
         const data = {};
         formData.forEach((value, key) => { data[key] = value; });
@@ -146,7 +159,3 @@
     </script>
   </body>
 </html>
-
-
-
-
