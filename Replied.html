@@ -30,7 +30,7 @@
 
       <select id="mode">
         <option value="">-- Select Mode of Complaint --</option>
-        <option value="Fault app">Fault app</option>
+        <option value="Fault App">Fault App</option>
         <option value="Whatsapp">Whatsapp</option>
         <option value="E-mail">E-mail</option>
         <option value="Customer Care">Customer Care</option>
@@ -54,7 +54,7 @@
 
         google.script.run.withSuccessHandler(function(response) {
           document.getElementById('statusMsg').textContent = response;
-        }).markAsReplied(ackNo, mode);
+        }).updateRepliedStatus(ackNo, mode);
       }
 
       function goBack() {
