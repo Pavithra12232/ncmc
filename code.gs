@@ -3,17 +3,17 @@ function doGet(e) {
   const page = e && e.parameter && e.parameter.page;
 
   if (page === "complaint") {
-    return HtmlService.createHtmlOutputFromFile('Index');
+    return HtmlService.createHtmlOutputFromFile("Index");
   } else if (page === "mail") {
-    return HtmlService.createHtmlOutputFromFile('MailSent');
+    return HtmlService.createHtmlOutputFromFile("MailSent");
   } else if (page === "replied") {
-    return HtmlService.createHtmlOutputFromFile('Replied');
+    return HtmlService.createHtmlOutputFromFile("Replied");
   } else if (page === "closefault") {
-    return HtmlService.createHtmlOutputFromFile('CloseFault');
+    return HtmlService.createHtmlOutputFromFile("CloseFault");
   } else if (page === "dashboard") {
-    return HtmlService.createHtmlOutputFromFile('Dashboard');
+    return HtmlService.createHtmlOutputFromFile("Dashboard");
   } else {
-    return HtmlService.createHtmlOutputFromFile('Login');
+    return HtmlService.createHtmlOutputFromFile("Login");
   }
 }
 
@@ -21,77 +21,118 @@ function doGet(e) {
 function checkLogin(username, password) {
   const defaultUsername = "admin";
   const defaultPassword = "admin123";
-
-  if (username === defaultUsername && password === defaultPassword) {
-    return "success";
-  } else {
-    return "fail";
-  }
+  return username === defaultUsername && password === defaultPassword ? "success" : "fail";
 }
 
 // Return form HTMLs
 function getComplaintForm() {
-  return HtmlService.createHtmlOutputFromFile('Index').getContent();
+  return HtmlService.createHtmlOutputFromFile("Index").getContent();
 }
 
 function getMailSentForm() {
-  return HtmlService.createHtmlOutputFromFile('MailSent').getContent();
+  return HtmlService.createHtmlOutputFromFile("MailSent").getContent();
 }
 
 function getRepliedForm() {
-  return HtmlService.createHtmlOutputFromFile('Replied').getContent();
+  return HtmlService.createHtmlOutputFromFile("Replied").getContent();
 }
 
 function getCloseFaultForm() {
-  return HtmlService.createHtmlOutputFromFile('CloseFault').getContent();
+  return HtmlService.createHtmlOutputFromFile("CloseFault").getContent();
 }
 
 function getLoginForm() {
-  return HtmlService.createHtmlOutputFromFile('Login').getContent();
+  return HtmlService.createHtmlOutputFromFile("Login").getContent();
 }
 
 function getDashboard() {
-  return HtmlService.createHtmlOutputFromFile('Dashboard').getContent();
+  return HtmlService.createHtmlOutputFromFile("Dashboard").getContent();
 }
 
-// Submit complaint with auto-generated sequential Ack No and auto-raise in mode column
+// Submit complaint
 function submitComplaintToSheet(data) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
-  if (!sheet) throw new Error("❌ Sheet 'Data' not found.");
+  if (!sheet) throw new Error("❌ Sheet 'Data' not found. Please create it.");
 
   const lastRow = sheet.getLastRow();
-  let ackNo;
-
+  let nextAckNo = 1000;
   if (lastRow > 1) {
-    const lastAckNoCell = sheet.getRange(lastRow, 1).getValue();
-    ackNo = lastAckNoCell && !isNaN(lastAckNoCell) ? parseInt(lastAckNoCell) + 1 : 1000;
-  } else {
-    ackNo = 1000;
+    const lastAckNo = sheet.getRange(lastRow, 1).getValue();
+    nextAckNo = Number(lastAckNo) + 1;
   }
 
-  const newRow = lastRow + 1;
-
-  // Determine which channel to set as 'Raised'
-  let faultApp = "", whatsapp = "", email = "", customerCare = "";
-  switch (data.mode.toLowerCase()) {
-    case "fault app": faultApp = "Raised"; break;
-    case "whatsapp": whatsapp = "Raised"; break;
-    case "e-mail": case "email": email = "Raised"; break;
-    case "customer care": customerCare = "Raised"; break;
-  }
+  const channels = {
+    "Fault App": 16,
+    "Whatsapp": 17,
+    "E-mail": 18,
+    "Customer Care": 19
+  };
 
   const values = [[
-    ackNo, data.date, data.time, data.station, data.mode, data.scm,
-    data.name || "", data.mobile || "", data.type, data.description,
-    "", "", "", "", "",
-    faultApp, whatsapp, email, customerCare
+    nextAckNo,
+    data.date,
+    data.time,
+    data.station,
+    data.mode,
+    data.scm,
+    data.name || "",
+    data.mobile || "",
+    data.type,
+    data.description,
+    "", "", "", "", "", "", "", "", ""
   ]];
 
-  sheet.getRange(newRow, 1, 1, values[0].length).setValues(values);
-  return "✅ Complaint submitted with Ack No: " + ackNo;
+  sheet.getRange(lastRow + 1, 1, 1, values[0].length).setValues(values);
+
+  const modeColumn = channels[data.mode];
+  if (modeColumn) {
+    sheet.getRange(lastRow + 1, modeColumn).setValue("Raised");
+  }
+
+  return "✅ Complaint submitted successfully with Ack No: " + nextAckNo;
 }
 
-// Mark mail as sent and close
+// Get dashboard stats
+function getDashboardCounts() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
+  const data = sheet.getDataRange().getValues();
+  let pendingFaults = 0, pendingMails = 0, pendingReplied = 0;
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row[11]) pendingFaults++; // Status (L)
+    if (!row[14]) pendingMails++;  // Mail Status (O)
+    if ([row[16], row[17], row[18], row[19]].includes("Raised")) pendingReplied++; // P-S
+  }
+
+  return { pendingFaults, pendingMails, pendingReplied };
+}
+
+// Get pending mails count and details
+function getPendingMails() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
+  const data = sheet.getDataRange().getValues();
+  const pending = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const mailStatus = row[14]; // Column O
+    if (!mailStatus) { // blank status = pending
+      pending.push({
+        ackNo: row[0],
+        scm: row[5],
+        mobile: row[7],
+        amount: row[10],
+        type: row[8],
+        description: row[9]
+      });
+    }
+  }
+
+  return { count: pending.length, details: pending };
+}
+
+// Mark mail as sent
 function markMailSentAndClose(ackNo) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
   const data = sheet.getDataRange().getValues();
@@ -107,30 +148,30 @@ function markMailSentAndClose(ackNo) {
   return "❌ Ack No not found.";
 }
 
-// Mark complaint as replied in correct mode column
-function markAsReplied(ackNo, mode) {
+// Mark complaint as replied
+function updateRepliedStatus(ackNo, mode) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
   const data = sheet.getDataRange().getValues();
 
-  const modeMap = {
-    "fault app": 16, // P
-    "whatsapp": 17, // Q
-    "e-mail": 18,   // R
-    "email": 18,    // R
-    "customer care": 19 // S
+  // Mapping mode to correct column number (1-based index)
+  const modeColumnMap = {
+    "Fault App": 16,
+    "Whatsapp": 17,
+    "E-mail": 18,
+    "Customer Care": 19
   };
 
-  const colIndex = modeMap[mode.toLowerCase()];
+  const colIndex = modeColumnMap[mode];
   if (!colIndex) return "❌ Invalid mode selected.";
 
   for (let i = 1; i < data.length; i++) {
     if (data[i][0].toString() === ackNo.toString()) {
-      let val = sheet.getRange(i + 1, colIndex).getValue();
-      if (val === "Raised") {
+      const currentValue = sheet.getRange(i + 1, colIndex).getValue();
+      if (currentValue === "Raised") {
         sheet.getRange(i + 1, colIndex).setValue("Replied");
-        return `✅ Updated to 'Replied' under ${mode} for Ack No: ${ackNo}`;
+        return "✅ Replied updated for Ack No: " + ackNo + " under mode: " + mode;
       } else {
-        return `ℹ️ No 'Raised' found under ${mode} for Ack No: ${ackNo}`;
+        return "ℹ️ Mode is not 'Raised' for Ack No: " + ackNo;
       }
     }
   }
@@ -145,7 +186,7 @@ function closeFault(ackNo, closedDate) {
   for (let i = 1; i < data.length; i++) {
     if (data[i][0].toString() === ackNo.toString()) {
       sheet.getRange(i + 1, 12).setValue("Closed"); // Status (L)
-      sheet.getRange(i + 1, 13).setValue(closedDate); // Fault Closed Date (M)
+      sheet.getRange(i + 1, 13).setValue(closedDate); // Closed Date (M)
       return "✅ Fault closed for Ack No: " + ackNo;
     }
   }
