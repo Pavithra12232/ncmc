@@ -56,15 +56,18 @@
 
     <script>
       let pendingMails = [];
+
       function loadPendingMails() {
         google.script.run.withSuccessHandler(data => {
-          pendingMails = data;
-          document.getElementById("pendingCount").value = data.length;
+          pendingMails = data.details;
+          document.getElementById("pendingCount").value = data.count;
+
           const select = document.getElementById("ackNoSelect");
           select.innerHTML = '<option value="">-- Select Ack No --</option>';
-          data.forEach(d => {
+          pendingMails.forEach(d => {
             const opt = document.createElement("option");
-            opt.value = d.ackNo; opt.text = d.ackNo;
+            opt.value = d.ackNo;
+            opt.text = d.ackNo;
             select.add(opt);
           });
         }).getPendingMails();
@@ -103,5 +106,3 @@
     </script>
   </body>
 </html>
-
-
