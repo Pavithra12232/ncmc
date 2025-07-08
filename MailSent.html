@@ -30,9 +30,12 @@
   <body>
     <div class="card">
       <h2>Sending Mail to SBI Team</h2>
-      <label>Pending Mails</label>
-      <input type="text" id="pendingCount" readonly>
 
+      <!-- Pending Faults Count -->
+      <label>Pending Faults</label>
+      <input type="text" id="pendingFaultsCount" readonly placeholder="Loading…">
+
+      <!-- Ack No Dropdown -->
       <label>Complaint Ack No</label>
       <select id="ackNoSelect" onchange="loadDetails()">
         <option value="">-- Select Ack No --</option>
@@ -56,32 +59,54 @@
 
     <script>
       let pendingMails = [];
+      let pendingFaults = [];
 
-      function loadPendingMails() {
-        google.script.run.withSuccessHandler(data => {
-          pendingMails = data.details;
-          document.getElementById("pendingCount").value = data.count;
+      // Load pending faults and populate count + dropdown
+      function loadPendingFaults() {
+        google.script.run.withSuccessHandler(faults => {
+          pendingFaults = faults;
+          document.getElementById("pendingFaultsCount").value = faults.length + " pending";
 
           const select = document.getElementById("ackNoSelect");
           select.innerHTML = '<option value="">-- Select Ack No --</option>';
-          pendingMails.forEach(d => {
+          faults.forEach(ack => {
             const opt = document.createElement("option");
-            opt.value = d.ackNo;
-            opt.text = d.ackNo;
+            opt.value = ack;
+            opt.text = ack;
             select.add(opt);
           });
+        }).getPendingFaults();
+      }
+
+      // Load pending mails data for detail filling
+      function loadPendingMails() {
+        google.script.run.withSuccessHandler(data => {
+          pendingMails = data.details;
         }).getPendingMails();
       }
 
+      // Fill details when Ack No changes
       function loadDetails() {
-        const ackNo = document.getElementById("ackNoSelect").value;
-        const detail = pendingMails.find(d => d.ackNo == ackNo);
-        document.getElementById("scm").value = detail ? detail.scm : "";
-        document.getElementById("mobile").value = detail ? detail.mobile : "";
-        document.getElementById("amount").value = detail ? detail.amount : "";
-        document.getElementById("type").value = detail ? detail.type : "";
-        document.getElementById("description").value = detail ? detail.description : "";
-      }
+  const ackNo = document.getElementById("ackNoSelect").value;
+  if (!ackNo) return;
+
+  google.script.run.withSuccessHandler(detail => {
+    if (detail) {
+      document.getElementById("scm").value = detail.scm;
+      document.getElementById("mobile").value = detail.mobile;
+      document.getElementById("amount").value = detail.amount;
+      document.getElementById("type").value = detail.type;
+      document.getElementById("description").value = detail.description;
+    } else {
+      document.getElementById("scm").value = "";
+      document.getElementById("mobile").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("type").value = "";
+      document.getElementById("description").value = "";
+    }
+  }).getComplaintDetails(ackNo);
+}
+
 
       function markSent() {
         const ackNo = document.getElementById("ackNoSelect").value;
@@ -92,6 +117,7 @@
 
         google.script.run.withSuccessHandler(msg => {
           document.getElementById("response").textContent = msg;
+          loadPendingFaults();
           loadPendingMails();
         }).markMailSentAndClose(ackNo);
       }
@@ -102,7 +128,10 @@
         }).getDashboard();
       }
 
-      window.onload = loadPendingMails;
+      window.onload = function() {
+        loadPendingFaults();
+        loadPendingMails();
+      };
     </script>
   </body>
 </html>
