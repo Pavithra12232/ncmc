@@ -2,12 +2,6 @@
 <html>
   <head>
     <base target="_top">
-  </head>
-  <body>
-    <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
     <title>Close Fault</title>
     <style>
       body { font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2; padding: 30px; margin: 0; }
@@ -17,7 +11,7 @@
         border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
       label { display: block; margin-top: 15px; font-weight: 500; }
-      input {
+      select, input[type="date"] {
         width: 100%; padding: 10px; margin-top: 5px;
         border: 1px solid #ccc; border-radius: 5px; font-size: 14px;
       }
@@ -36,27 +30,61 @@
   <body>
     <div class="card">
       <h2>Close Fault</h2>
-      <label>Ack No</label>
-      <input type="text" id="ackNo" placeholder="Enter Ack No">
-      <label>Fault Closed Date</label>
+
+      <label for="ackNoSelect">Ack No</label>
+      <select id="ackNoSelect">
+        <option value="">-- Select Ack No --</option>
+      </select>
+
+      <label for="closedDate">Fault Closed Date</label>
       <input type="date" id="closedDate">
+
       <button onclick="closeFault()">Close Fault</button>
       <button class="back-button" onclick="goBack()">Back</button>
       <div id="response"></div>
     </div>
 
     <script>
+      // Load pending faults on page load
+      window.onload = function() {
+        loadPendingFaults();
+      };
+
+      function loadPendingFaults() {
+        google.script.run.withSuccessHandler(function(acks) {
+          const select = document.getElementById("ackNoSelect");
+          select.innerHTML = '<option value="">-- Select Ack No --</option>';
+          if (acks && acks.length > 0) {
+            acks.forEach(function(ack){
+              const opt = document.createElement("option");
+              opt.value = ack;
+              opt.text = ack;
+              select.add(opt);
+            });
+          } else {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.text = "No pending faults";
+            select.add(opt);
+          }
+        }).withFailureHandler(function(error){
+          console.error("Error loading pending faults:", error);
+          document.getElementById("response").textContent = "⚠️ Error loading pending faults.";
+        }).getPendingFaults();
+      }
+
       function closeFault() {
-        const ackNo = document.getElementById("ackNo").value.trim();
+        const ackNo = document.getElementById("ackNoSelect").value;
         const closedDate = document.getElementById("closedDate").value;
 
         if (!ackNo || !closedDate) {
-          document.getElementById("response").textContent = "Please enter both Ack No and Closed Date.";
+          document.getElementById("response").textContent = "Please select both Ack No and Closed Date.";
           return;
         }
 
-        google.script.run.withSuccessHandler(msg => {
+        google.script.run.withSuccessHandler(function(msg) {
           document.getElementById("response").textContent = msg;
+          loadPendingFaults(); // Refresh after closing
         }).closeFault(ackNo, closedDate);
       }
 
@@ -68,8 +96,3 @@
     </script>
   </body>
 </html>
-
-
-
-
-
