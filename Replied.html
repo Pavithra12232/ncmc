@@ -4,30 +4,71 @@
     <base target="_top">
     <title>Mark Complaint as Replied</title>
     <style>
-      body { font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2; padding: 30px; margin: 0; }
-      .card {
-        background-color: #fff; padding: 25px; max-width: 400px; margin: auto;
-        border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f2f2f2;
+        padding: 30px;
+        margin: 0;
       }
-      input[type="text"], select, button {
-        width: 100%; padding: 10px; margin-top: 10px;
-        border-radius: 4px; border: 1px solid #ccc; font-size: 14px;
+      .card {
+        background-color: #fff;
+        padding: 25px;
+        max-width: 400px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: 500;
+      }
+      select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 14px;
       }
       button {
-        background-color: #007b5e; color: white; border: none; cursor: pointer;
+        background-color: #007b5e;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 15px;
       }
-      button:hover { background-color: #005e45; }
-      .back-button { background-color: #999; }
-      .back-button:hover { background-color: #666; }
-      #statusMsg { margin-top: 15px; text-align: center; font-weight: bold; }
+      button:hover {
+        background-color: #005e45;
+      }
+      .back-button {
+        background-color: #999;
+      }
+      .back-button:hover {
+        background-color: #666;
+      }
+      #statusMsg {
+        margin-top: 15px;
+        text-align: center;
+        font-weight: bold;
+      }
     </style>
   </head>
 
   <body>
     <div class="card">
       <h2>Mark Complaint as Replied</h2>
-      <input type="text" id="ackNo" placeholder="Enter Ack No">
 
+      <label for="ackNoSelect">Select Ack No</label>
+      <select id="ackNoSelect">
+        <option value="">-- Select Ack No --</option>
+      </select>
+
+      <label for="mode">Select Mode of Complaint</label>
       <select id="mode">
         <option value="">-- Select Mode of Complaint --</option>
         <option value="Fault App">Fault App</option>
@@ -43,17 +84,36 @@
     </div>
 
     <script>
+      // Load pending replies on page load
+      window.onload = function() {
+        loadPendingReplies();
+      };
+
+      function loadPendingReplies() {
+        google.script.run.withSuccessHandler(function(acks) {
+          const select = document.getElementById("ackNoSelect");
+          select.innerHTML = '<option value="">-- Select Ack No --</option>';
+          acks.forEach(function(ack){
+            const opt = document.createElement("option");
+            opt.value = ack;
+            opt.text = ack;
+            select.add(opt);
+          });
+        }).getPendingReplies();
+      }
+
       function markAsReplied() {
-        const ackNo = document.getElementById('ackNo').value.trim();
+        const ackNo = document.getElementById('ackNoSelect').value;
         const mode = document.getElementById('mode').value;
 
         if (!ackNo || !mode) {
-          document.getElementById('statusMsg').textContent = "Please enter Ack No and select Mode.";
+          document.getElementById('statusMsg').innerHTML = "⚠️ Please select Ack No and Mode.";
           return;
         }
 
         google.script.run.withSuccessHandler(function(response) {
-          document.getElementById('statusMsg').textContent = response;
+          document.getElementById('statusMsg').innerHTML = response;
+          loadPendingReplies(); // Refresh list after marking as replied
         }).updateRepliedStatus(ackNo, mode);
       }
 
