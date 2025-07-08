@@ -1,33 +1,68 @@
-
 <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    <!DOCTYPE html>
 <html>
   <head>
     <base target="_top">
     <title>CMRL Dashboard</title>
     <style>
       body {
-        font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2;
-        display: flex; flex-direction: column; align-items: center;
-        padding-top: 50px; margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 0;
+        margin: 0;
       }
-      h2 { color: #333; }
+      h2 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .card {
+        background: #fff;
+        width: 360px;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: left;
+      }
+      .card h3 {
+        margin: 0 0 10px;
+        color: #007b5e;
+      }
+      .card ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .card ul li {
+        margin: 4px 0;
+        font-size: 14px;
+      }
       button {
-        background-color: #007b5e; color: white; padding: 12px;
-        border: none; border-radius: 5px; margin: 10px 0;
-        font-size: 16px; cursor: pointer; width: 250px;
+        background-color: #007b5e;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        margin: 8px 0;
+        font-size: 16px;
+        cursor: pointer;
+        width: 260px;
       }
-      button:hover { background-color: #005e45; }
+      button:hover {
+        background-color: #005e45;
+      }
     </style>
   </head>
-
   <body>
-    <h2>CMRL Dashboard</h2>
+    <h2>CMRL Dashboard Summary</h2>
+
+    <!-- Summary placeholder -->
+    <div id="dashboardData">
+      <div class="card">Loading summary…</div>
+    </div>
+
+    <!-- Navigation buttons -->
     <button onclick="loadComplaintForm()">Complaint Form</button>
     <button onclick="loadMailSent()">Mail Sent Form</button>
     <button onclick="loadReplied()">Replied Form</button>
@@ -35,39 +70,62 @@
     <button onclick="goBackToLogin()">Back</button>
 
     <script>
+      // Load summary on page load
+      window.onload = function() {
+        google.script.run.withSuccessHandler(renderDashboard).getDashboardSummary();
+      };
+
+      // Render the three cards
+      function renderDashboard(data) {
+        const container = document.getElementById('dashboardData');
+        container.innerHTML = `
+          <div class="card">
+            <h3>Pending Faults: ${data.pendingFaults.count}</h3>
+            <ul>
+              ${data.pendingFaults.ackNos.map(no => `<li>${no}</li>`).join('') || '<li>None</li>'}
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Emails Unsent: ${data.unsentEmails.count}</h3>
+            <ul>
+              ${data.unsentEmails.ackNos.map(no => `<li>${no}</li>`).join('') || '<li>None</li>'}
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Pending Replies: ${data.pendingReplies.count}</h3>
+            <ul>
+              ${data.pendingReplies.ackNos.map(no => `<li>${no}</li>`).join('') || '<li>None</li>'}
+            </ul>
+          </div>
+        `;
+      }
+
+      // Navigation helpers
       function loadComplaintForm() {
-        google.script.run.withSuccessHandler(html => {
-          document.open(); document.write(html); document.close();
+        google.script.run.withSuccessHandler(html=>{
+          document.open();document.write(html);document.close();
         }).getComplaintForm();
       }
-
       function loadMailSent() {
-        google.script.run.withSuccessHandler(html => {
-          document.open(); document.write(html); document.close();
+        google.script.run.withSuccessHandler(html=>{
+          document.open();document.write(html);document.close();
         }).getMailSentForm();
       }
-
       function loadReplied() {
-        google.script.run.withSuccessHandler(html => {
-          document.open(); document.write(html); document.close();
+        google.script.run.withSuccessHandler(html=>{
+          document.open();document.write(html);document.close();
         }).getRepliedForm();
       }
-
       function loadCloseFault() {
-        google.script.run.withSuccessHandler(html => {
-          document.open(); document.write(html); document.close();
+        google.script.run.withSuccessHandler(html=>{
+          document.open();document.write(html);document.close();
         }).getCloseFaultForm();
       }
-
       function goBackToLogin() {
-        google.script.run.withSuccessHandler(html => {
-          document.open(); document.write(html); document.close();
+        google.script.run.withSuccessHandler(html=>{
+          document.open();document.write(html);document.close();
         }).getLoginForm();
       }
     </script>
   </body>
 </html>
-
-
-
-
