@@ -54,6 +54,7 @@
       }
     </style>
   </head>
+
   <body>
     <h2>CMRL Dashboard Summary</h2>
 
@@ -102,28 +103,32 @@
 
       // Navigation helpers
       function loadComplaintForm() {
-        google.script.run.withSuccessHandler(html=>{
-          document.open();document.write(html);document.close();
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
         }).getComplaintForm();
       }
+
       function loadMailSent() {
-        google.script.run.withSuccessHandler(html=>{
-          document.open();document.write(html);document.close();
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
         }).getMailSentForm();
       }
+
       function loadReplied() {
-        google.script.run.withSuccessHandler(html=>{
-          document.open();document.write(html);document.close();
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
         }).getRepliedForm();
       }
+
       function loadCloseFault() {
-        google.script.run.withSuccessHandler(html=>{
-          document.open();document.write(html);document.close();
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
         }).getCloseFaultForm();
       }
+
       function goBackToLogin() {
-        google.script.run.withSuccessHandler(html=>{
-          document.open();document.write(html);document.close();
+        google.script.run.withSuccessHandler(html => {
+          document.open(); document.write(html); document.close();
         }).getLoginForm();
       }
     </script>
