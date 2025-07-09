@@ -2,7 +2,7 @@
 <html>
   <head>
     <base target="_top">
-    <title>CMRL NCMC CUSTOMER COMPLAINTS DASHBOARD</title>
+    <title>CMRL Customer Complaints Dashboard</title>
     <style>
       body {
         font-family: 'Segoe UI', sans-serif;
@@ -56,7 +56,7 @@
   </head>
 
   <body>
-    <h2>CMRL Dashboard Summary</h2>
+    <h2>CMRL Customer Complaints Dashboard Summary</h2>
 
     <!-- Summary placeholder -->
     <div id="dashboardData">
@@ -76,7 +76,7 @@
         google.script.run.withSuccessHandler(renderDashboard).getDashboardSummary();
       };
 
-      // Render the three cards
+      // Render cards
       function renderDashboard(data) {
         const container = document.getElementById('dashboardData');
         container.innerHTML = `
