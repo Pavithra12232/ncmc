@@ -4,26 +4,63 @@
     <base target="_top">
     <title>Send Mail to SBI Team</title>
     <style>
-      body { font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2; padding: 30px; margin: 0; }
-      h2 { text-align: center; color: #333; }
-      .card {
-        background-color: #fff; padding: 25px; max-width: 600px; margin: auto;
-        border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f2f2f2;
+        padding: 30px;
+        margin: 0;
       }
-      label { display: block; margin-top: 15px; font-weight: 500; }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      .card {
+        background-color: #fff;
+        padding: 25px;
+        max-width: 600px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 500;
+      }
       select, input, textarea {
-        width: 100%; padding: 10px; margin-top: 5px;
-        border: 1px solid #ccc; border-radius: 5px; font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
       }
       button {
-        background-color: #007b5e; color: white; padding: 12px;
-        border: none; border-radius: 5px; margin-top: 10px;
-        font-size: 16px; cursor: pointer; width: 100%;
+        background-color: #007b5e;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
       }
-      button:hover { background-color: #005e45; }
-      .back-button { background-color: #999; }
-      .back-button:hover { background-color: #666; }
-      #response { margin-top: 20px; text-align: center; font-weight: bold; color: green; }
+      button:hover {
+        background-color: #005e45;
+      }
+      .back-button {
+        background-color: #999;
+      }
+      .back-button:hover {
+        background-color: #666;
+      }
+      #response {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+        color: green;
+      }
     </style>
   </head>
 
@@ -58,18 +95,18 @@
     </div>
 
     <script>
-      let pendingMails = [];
-      let pendingFaults = [];
+      // Load pending faults on page load
+      window.onload = function() {
+        loadPendingFaults();
+      };
 
-      // Load pending faults and populate count + dropdown
       function loadPendingFaults() {
-        google.script.run.withSuccessHandler(faults => {
-          pendingFaults = faults;
+        google.script.run.withSuccessHandler(function(faults) {
           document.getElementById("pendingFaultsCount").value = faults.length + " pending";
 
           const select = document.getElementById("ackNoSelect");
           select.innerHTML = '<option value="">-- Select Ack No --</option>';
-          faults.forEach(ack => {
+          faults.forEach(function(ack) {
             const opt = document.createElement("option");
             opt.value = ack;
             opt.text = ack;
@@ -78,35 +115,26 @@
         }).getPendingFaults();
       }
 
-      // Load pending mails data for detail filling
-      function loadPendingMails() {
-        google.script.run.withSuccessHandler(data => {
-          pendingMails = data.details;
-        }).getPendingMails();
-      }
-
-      // Fill details when Ack No changes
       function loadDetails() {
-  const ackNo = document.getElementById("ackNoSelect").value;
-  if (!ackNo) return;
+        const ackNo = document.getElementById("ackNoSelect").value;
+        if (!ackNo) return;
 
-  google.script.run.withSuccessHandler(detail => {
-    if (detail) {
-      document.getElementById("scm").value = detail.scm;
-      document.getElementById("mobile").value = detail.mobile;
-      document.getElementById("amount").value = detail.amount;
-      document.getElementById("type").value = detail.type;
-      document.getElementById("description").value = detail.description;
-    } else {
-      document.getElementById("scm").value = "";
-      document.getElementById("mobile").value = "";
-      document.getElementById("amount").value = "";
-      document.getElementById("type").value = "";
-      document.getElementById("description").value = "";
-    }
-  }).getComplaintDetails(ackNo);
-}
-
+        google.script.run.withSuccessHandler(function(detail) {
+          if (detail) {
+            document.getElementById("scm").value = detail.scm || "";
+            document.getElementById("mobile").value = detail.mobile || "";
+            document.getElementById("amount").value = detail.amount || "";
+            document.getElementById("type").value = detail.type || "";
+            document.getElementById("description").value = detail.description || "";
+          } else {
+            document.getElementById("scm").value = "";
+            document.getElementById("mobile").value = "";
+            document.getElementById("amount").value = "";
+            document.getElementById("type").value = "";
+            document.getElementById("description").value = "";
+          }
+        }).getComplaintDetails(ackNo);
+      }
 
       function markSent() {
         const ackNo = document.getElementById("ackNoSelect").value;
@@ -115,23 +143,19 @@
           return;
         }
 
-        google.script.run.withSuccessHandler(msg => {
+        google.script.run.withSuccessHandler(function(msg) {
           document.getElementById("response").textContent = msg;
-          loadPendingFaults();
-          loadPendingMails();
+          loadPendingFaults(); // Refresh after marking sent
         }).markMailSentAndClose(ackNo);
       }
 
       function goBack() {
         google.script.run.withSuccessHandler(function(html) {
-          document.open(); document.write(html); document.close();
+          document.open();
+          document.write(html);
+          document.close();
         }).getDashboard();
       }
-
-      window.onload = function() {
-        loadPendingFaults();
-        loadPendingMails();
-      };
     </script>
   </body>
 </html>
