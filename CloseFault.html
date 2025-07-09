@@ -4,26 +4,63 @@
     <base target="_top">
     <title>Close Fault</title>
     <style>
-      body { font-family: 'Segoe UI', sans-serif; background-color: #f2f2f2; padding: 30px; margin: 0; }
-      h2 { text-align: center; color: #333; }
-      .card {
-        background-color: #fff; padding: 25px; max-width: 500px; margin: auto;
-        border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f2f2f2;
+        padding: 30px;
+        margin: 0;
       }
-      label { display: block; margin-top: 15px; font-weight: 500; }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      .card {
+        background-color: #fff;
+        padding: 25px;
+        max-width: 500px;
+        margin: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 500;
+      }
       select, input[type="date"] {
-        width: 100%; padding: 10px; margin-top: 5px;
-        border: 1px solid #ccc; border-radius: 5px; font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
       }
       button {
-        background-color: #d9534f; color: white; padding: 12px;
-        border: none; border-radius: 5px; margin-top: 10px;
-        font-size: 16px; cursor: pointer; width: 100%;
+        background-color: #d9534f;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
       }
-      button:hover { background-color: #c9302c; }
-      .back-button { background-color: #999; }
-      .back-button:hover { background-color: #666; }
-      #response { margin-top: 20px; text-align: center; font-weight: bold; color: green; }
+      button:hover {
+        background-color: #c9302c;
+      }
+      .back-button {
+        background-color: #999;
+      }
+      .back-button:hover {
+        background-color: #666;
+      }
+      #response {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+        color: green;
+      }
     </style>
   </head>
 
@@ -55,7 +92,7 @@
           const select = document.getElementById("ackNoSelect");
           select.innerHTML = '<option value="">-- Select Ack No --</option>';
           if (acks && acks.length > 0) {
-            acks.forEach(function(ack){
+            acks.forEach(function(ack) {
               const opt = document.createElement("option");
               opt.value = ack;
               opt.text = ack;
@@ -67,7 +104,7 @@
             opt.text = "No pending faults";
             select.add(opt);
           }
-        }).withFailureHandler(function(error){
+        }).withFailureHandler(function(error) {
           console.error("Error loading pending faults:", error);
           document.getElementById("response").textContent = "⚠️ Error loading pending faults.";
         }).getPendingFaults();
@@ -90,7 +127,9 @@
 
       function goBack() {
         google.script.run.withSuccessHandler(function(html) {
-          document.open(); document.write(html); document.close();
+          document.open();
+          document.write(html);
+          document.close();
         }).getDashboard();
       }
     </script>
