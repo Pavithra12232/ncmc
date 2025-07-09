@@ -156,10 +156,13 @@ function getDashboardSummary() {
     if (!row[15]) {
       unsentEmails.count++; unsentEmails.ackNos.push(ack);
     }
-    if ([row[17],row[18],row[19],row[20]].includes("Raised")) {
-      pendingReplies.count++; pendingReplies.ackNos.push(ack);
-    }
   }
+
+  // Use getPendingReplies() directly for full Ack No + Mode display
+  const replies = getPendingReplies();
+  pendingReplies.count = replies.length;
+  pendingReplies.ackNos = replies;
+
   return { pendingFaults, unsentEmails, pendingReplies };
 }
 
