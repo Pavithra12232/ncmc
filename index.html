@@ -49,6 +49,7 @@
       <label>Station <span class="required">*</span></label>
       <select name="station" required>
         <option value="">-- Select --</option>
+        <!-- Station options -->
         <option value="SWD">SWD</option>
         <option value="SWN">SWN</option>
         <option value="STV">STV</option>
@@ -109,6 +110,10 @@
 
       <label>Mobile Number</label>
       <input type="tel" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
+
+      <!-- 🔴 Inserted Amount field here -->
+      <label>Amount <span class="required">*</span></label>
+      <input type="number" name="amount" placeholder="Enter amount" required>
 
       <label>Complaint Type <span class="required">*</span></label>
       <select name="type" required>
