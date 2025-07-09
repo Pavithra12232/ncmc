@@ -39,12 +39,12 @@ function submitComplaintToSheet(data) {
 
   const row = [
     nextAck, data.date, data.time, data.station, data.mode, data.scm,
-    data.name||"", data.mobile||"", data.type, data.description,
+    data.name||"", data.mobile||"", data.amount||"", data.type, data.description,
     "", "", "", "", "", "", "", "", ""
   ];
   sheet.getRange(lastRow+1,1,1,row.length).setValues([row]);
 
-  const channels = { "Fault App":16, "Whatsapp":17, "E-mail":18, "Customer Care":19 };
+  const channels = { "Fault App":17, "Whatsapp":18, "E-mail":19, "Customer Care":20 };
   const col = channels[data.mode];
   if (col) sheet.getRange(lastRow+1, col).setValue("Raised");
 
@@ -59,8 +59,8 @@ function markMailSentAndClose(ackNo) {
 
   for (let i=1; i<data.length; i++) {
     if (data[i][0].toString() === String(ackNo)) {
-      sheet.getRange(i+1,14).setValue(today);   // N
-      sheet.getRange(i+1,15).setValue("Sent");  // O
+      sheet.getRange(i+1,15).setValue(today);   // O
+      sheet.getRange(i+1,16).setValue("Sent");  // P
       return "✅ Mail sent for Ack No: "+ackNo;
     }
   }
@@ -74,7 +74,7 @@ function getPendingFaults() {
   const pending = [];
 
   for (let i=1; i<data.length; i++) {
-    const status = data[i][11]; // L
+    const status = data[i][12]; // M
     const ackNo  = data[i][0];  // A
     if (!status || status.toString().trim() !== "Closed") {
       pending.push(ackNo);
@@ -91,7 +91,7 @@ function getPendingReplies() {
 
   for (let i=1; i<data.length; i++) {
     const ackNo = data[i][0];
-    if ([data[i][16],data[i][17],data[i][18],data[i][19]].includes("Raised")) {
+    if ([data[i][17],data[i][18],data[i][19],data[i][20]].includes("Raised")) {
       pendingReplies.push(ackNo);
     }
   }
@@ -102,7 +102,7 @@ function getPendingReplies() {
 function updateRepliedStatus(ackNo, mode) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
   const data = sheet.getDataRange().getValues();
-  const map = { "Fault App":16, "Whatsapp":17, "E-mail":18, "Customer Care":19 };
+  const map = { "Fault App":17, "Whatsapp":18, "E-mail":19, "Customer Care":20 };
   const col = map[mode];
   if (!col) return "❌ Invalid mode.";
 
@@ -127,8 +127,8 @@ function closeFault(ackNo, closedDate) {
 
   for (let i=1; i<data.length; i++) {
     if (data[i][0].toString() === String(ackNo)) {
-      sheet.getRange(i+1,12).setValue("Closed");   // L
-      sheet.getRange(i+1,13).setValue(closedDate); // M
+      sheet.getRange(i+1,13).setValue("Closed");   // M
+      sheet.getRange(i+1,14).setValue(closedDate); // N
       return "✅ Closed fault Ack No: "+ackNo;
     }
   }
@@ -146,13 +146,13 @@ function getDashboardSummary() {
 
   for (let i=1; i<data.length; i++) {
     const row = data[i], ack = row[0];
-    if (!row[11] || row[11]!=="Closed") {
+    if (!row[12] || row[12]!=="Closed") {
       pendingFaults.count++; pendingFaults.ackNos.push(ack);
     }
-    if (!row[14]) {
+    if (!row[15]) {
       unsentEmails.count++; unsentEmails.ackNos.push(ack);
     }
-    if ([row[16],row[17],row[18],row[19]].includes("Raised")) {
+    if ([row[17],row[18],row[19],row[20]].includes("Raised")) {
       pendingReplies.count++; pendingReplies.ackNos.push(ack);
     }
   }
@@ -169,9 +169,9 @@ function getComplaintDetails(ackNo) {
       return {
         scm: data[i][5] || "",
         mobile: data[i][7] || "",
-        amount: data[i][10] || "",
-        type: data[i][8] || "",
-        description: data[i][9] || ""
+        amount: data[i][8] || "",
+        type: data[i][9] || "",
+        description: data[i][10] || ""
       };
     }
   }
