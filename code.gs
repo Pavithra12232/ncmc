@@ -83,23 +83,27 @@ function getPendingFaults() {
   return pending;
 }
 
-// Return pending replies (Ack Nos with any Raised)
+// Return pending replies (Ack No + Mode combinations)
 function getPendingReplies() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
   const data = sheet.getDataRange().getValues();
   const pendingReplies = [];
+  const modes = {16: "Fault App", 17: "Whatsapp", 18: "E-mail", 19: "Customer Care"};
 
   for (let i=1; i<data.length; i++) {
     const ackNo = data[i][0];
-    if ([data[i][17],data[i][18],data[i][19],data[i][20]].includes("Raised")) {
-      pendingReplies.push(ackNo);
-    }
+    Object.keys(modes).forEach(col => {
+      if (data[i][col] === "Raised") {
+        pendingReplies.push(ackNo + " | " + modes[col]);
+      }
+    });
   }
   return pendingReplies;
 }
 
 // Mark complaint as replied
-function updateRepliedStatus(ackNo, mode) {
+function updateRepliedStatus(combined) {
+  const [ackNo, mode] = combined.split(" | ");
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
   const data = sheet.getDataRange().getValues();
   const map = { "Fault App":17, "Whatsapp":18, "E-mail":19, "Customer Care":20 };
