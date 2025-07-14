@@ -147,7 +147,7 @@ function getDashboardSummary() {
   const pendingFaults   = {count:0, ackNos:[]};
   const unsentEmails    = {count:0, ackNos:[]};
   const pendingReplies  = {count:0, ackNos:[]};
-
+  
   for (let i=1; i<data.length; i++) {
     const row = data[i], ack = row[0];
     if (!row[12] || row[12]!=="Closed") {
