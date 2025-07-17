@@ -7,6 +7,7 @@ function doGet(e) {
     case "replied":    return HtmlService.createHtmlOutputFromFile("Replied");
     case "closefault": return HtmlService.createHtmlOutputFromFile("CloseFault");
     case "dashboard":  return HtmlService.createHtmlOutputFromFile("Dashboard");
+    case "qrcomplaint":return HtmlService.createHtmlOutputFromFile("QRComplaintForm");
     default:           return HtmlService.createHtmlOutputFromFile("Login");
   }
 }
@@ -23,6 +24,7 @@ function getRepliedForm()    { return HtmlService.createHtmlOutputFromFile("Repl
 function getCloseFaultForm() { return HtmlService.createHtmlOutputFromFile("CloseFault").getContent(); }
 function getLoginForm()      { return HtmlService.createHtmlOutputFromFile("Login").getContent(); }
 function getDashboard()      { return HtmlService.createHtmlOutputFromFile("Dashboard").getContent(); }
+function getQRComplaintForm(){ return HtmlService.createHtmlOutputFromFile("QRComplaintForm").getContent(); }
 
 // Submit complaint (auto-AckNo + mark Raised)
 function submitComplaintToSheet(data) {
@@ -183,4 +185,31 @@ function getComplaintDetails(ackNo) {
     }
   }
   return null;
+}
+
+/* ===========================
+   QR Complaints: New Function
+   =========================== */
+
+// Submit QR complaint (auto-AckNo)
+function submitQRComplaintToSheet(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("QR complaints");
+  if (!sheet) throw new Error("Sheet 'QR complaints' not found.");
+
+  const lastRow = sheet.getLastRow();
+  let nextAck = 1000;
+  if (lastRow > 1) {
+    const prev = sheet.getRange(lastRow,1).getValue();
+    if (!isNaN(prev)) nextAck = Number(prev)+1;
+  }
+
+  const row = [
+    nextAck, data.date, data.time, data.cardId, data.originStation,
+    data.deviceId, data.ticketType, data.transactionType, data.amount,
+    data.remainingBalance, data.crn, data.description
+  ];
+  sheet.getRange(lastRow+1,1,1,row.length).setValues([row]);
+
+  return "✅ QR Complaint submitted (Ack No: "+nextAck+")";
 }
