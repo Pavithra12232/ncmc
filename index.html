@@ -6,37 +6,81 @@
     <style>
       body {
         font-family: 'Segoe UI', sans-serif;
-        background-color: #f2f2f2;
+        background-color: #e6e6fa; /* soft lavender background */
         padding: 40px;
         margin: 0;
       }
-      h2 { text-align: center; color: #333; }
+      h2 {
+        text-align: center;
+        color: #6b5b95; /* deep lavender grey-purple */
+      }
       form {
-        background-color: #fff;
+        background-color: #f5f3ff; /* very light lavender for form */
         padding: 25px 30px;
         max-width: 600px;
         margin: auto;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
-      label { display: block; margin-top: 15px; font-weight: 500; }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 500;
+        color: #4b3869; /* slightly darker lavender for labels */
+      }
       input, select, textarea {
-        width: 100%; padding: 10px; margin-top: 5px;
-        border: 1px solid #ccc; border-radius: 5px; font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #bfaee0; /* lavender border */
+        border-radius: 5px;
+        font-size: 14px;
+        background-color: #f8f6ff; /* input lavender background */
+        color: #4b3869; /* input text color lavender dark */
       }
-      textarea { resize: vertical; }
+      input::placeholder, textarea::placeholder {
+        color: #9b89b8; /* placeholder text soft lavender */
+      }
+      select option {
+        color: #4b3869;
+      }
+      textarea {
+        resize: vertical;
+      }
       button {
-        background-color: #007b5e; color: white; padding: 12px;
-        border: none; border-radius: 5px; margin-top: 20px;
-        font-size: 16px; cursor: pointer; width: 100%;
+        background-color: #9370db; /* medium lavender purple button */
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 20px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
       }
-      button:hover { background-color: #005e45; }
-      .back-button { background-color: #999; }
-      .back-button:hover { background-color: #666; }
-      #response { margin-top: 20px; text-align: center; font-weight: bold; color: green; }
-      .required { color: red; margin-left: 4px; }
+      button:hover {
+        background-color: #7b68ee; /* deeper lavender on hover */
+      }
+      .back-button {
+        background-color: #999;
+      }
+      .back-button:hover {
+        background-color: #666;
+      }
+      #response {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+        color: green;
+      }
+      .required {
+        color: red;
+        margin-left: 4px;
+      }
     </style>
   </head>
+
   <body>
     <h2>CMRL Complaint Submission</h2>
     <form id="complaintForm">
@@ -91,6 +135,7 @@
         <option value="SSI">SSI</option>
         <option value="SAL">SAL</option>
         <option value="SMM">SMM</option>
+        <option value="SWD">SWD</option>
       </select>
 
       <label>Mode of Complaint <span class="required">*</span></label>
@@ -111,7 +156,6 @@
       <label>Mobile Number</label>
       <input type="tel" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
 
-      <!-- 🔴 Inserted Amount field here -->
       <label>Amount <span class="required">*</span></label>
       <input type="number" name="amount" placeholder="Enter amount" required>
 
