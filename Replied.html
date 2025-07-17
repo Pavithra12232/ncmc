@@ -6,38 +6,63 @@
     <style>
       body {
         font-family: 'Segoe UI', sans-serif;
-        background-color: #f2f2f2;
+        background-color: #e6e6fa; /* soft lavender background */
         padding: 30px;
         margin: 0;
       }
       .card {
-        background-color: #fff;
+        background-color: #f5f3ff; /* very light lavender card */
         padding: 25px;
         max-width: 400px;
         margin: auto;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
-      h2 { text-align: center; margin-bottom: 20px; }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #6b5b95; /* deep lavender grey-purple */
+      }
+      label {
+        font-weight: 500;
+        color: #4b3869; /* darker lavender for labels */
+      }
       select, button {
         width: 100%;
         padding: 10px;
         margin-top: 5px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
+        border-radius: 5px;
+        border: 1px solid #bfaee0; /* lavender border */
         font-size: 14px;
+        background-color: #f8f6ff; /* input lavender bg */
+        color: #4b3869; /* input text color */
+      }
+      select option {
+        color: #4b3869;
       }
       button {
-        background-color: #007b5e;
+        background-color: #9370db; /* medium lavender purple button */
         color: white;
         border: none;
         cursor: pointer;
         margin-top: 15px;
+        transition: background-color 0.3s ease;
       }
-      button:hover { background-color: #005e45; }
-      .back-button { background-color: #999; }
-      .back-button:hover { background-color: #666; }
-      #statusMsg { margin-top: 15px; text-align: center; font-weight: bold; }
+      button:hover {
+        background-color: #7b68ee; /* deeper lavender on hover */
+      }
+      .back-button {
+        background-color: #999;
+      }
+      .back-button:hover {
+        background-color: #666;
+      }
+      #statusMsg {
+        margin-top: 15px;
+        text-align: center;
+        font-weight: bold;
+        color: green;
+      }
     </style>
   </head>
 
@@ -95,4 +120,3 @@
     </script>
   </body>
 </html>
-
