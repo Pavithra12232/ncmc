@@ -6,7 +6,7 @@
     <style>
       body {
         font-family: 'Segoe UI', sans-serif;
-        background-color: #f2f2f2;
+        background-color: #e6e6fa; /* elegant lavender */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -14,7 +14,7 @@
         margin: 0;
       }
       h2 {
-        color: #333;
+        color: #6b5b95; /* soft lavender grey-purple */
         margin-bottom: 20px;
       }
       .card {
@@ -22,13 +22,18 @@
         width: 360px;
         padding: 20px;
         margin: 10px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         text-align: left;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       }
       .card h3 {
         margin: 0 0 10px;
-        color: #007b5e;
+        color: #8e7cc3; /* lighter lavender purple */
       }
       .card ul {
         margin: 0;
@@ -39,7 +44,7 @@
         font-size: 14px;
       }
       button {
-        background-color: #007b5e;
+        background-color: #9370db; /* medium lavender purple for visibility */
         color: white;
         padding: 12px;
         border: none;
@@ -48,9 +53,10 @@
         font-size: 16px;
         cursor: pointer;
         width: 260px;
+        transition: background-color 0.3s ease;
       }
       button:hover {
-        background-color: #005e45;
+        background-color: #7b68ee; /* deeper lavender hover */
       }
     </style>
   </head>
